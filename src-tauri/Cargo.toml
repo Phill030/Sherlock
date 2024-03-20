@@ -1,0 +1,32 @@
+[package]
+name = "sherlock"
+version = "0.0.0"
+description = "A simple quick search bar for all your needs"
+authors = ["Phill030"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "1", features = [
+    "fs-read-file",
+    "fs-exists",
+    "fs-read-dir",
+    "clipboard-all",
+    "fs-create-dir",
+    "fs-copy-file",
+    "system-tray",
+    "shell-open",
+] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+window-vibrancy = "0.4.0"
+window-shadows = "0.2.2"
+winapi = "0.3.9"
+rdev = "0.5.3"
+lazy_static = "1.4.0"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
