@@ -1,9 +1,6 @@
 > [!TIP]
 > This is a tip!
 
-> [!INFO]
-> This is a tip!
-
 > [!WARNING]
 > This is a tip!
 
