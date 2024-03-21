@@ -1,38 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use rdev::{listen, Event, EventType, Key};
 use tauri::{
     CustomMenuItem, Manager, PhysicalPosition, PhysicalSize, SystemTray, SystemTrayMenu,
     SystemTrayMenuItem,
 };
 use window_shadows::set_shadow;
 use window_vibrancy::apply_acrylic;
-
-static mut WINDOWS_PRESSED: bool = false;
-
-fn callback(event: Event) {
-    match event.event_type {
-        EventType::KeyPress(key) => match key {
-            Key::MetaLeft => {
-                println!("TEST");
-                unsafe { WINDOWS_PRESSED = true }
-            }
-            Key::KeyY => {
-                if unsafe { WINDOWS_PRESSED } {
-                    print!("WINDOWS IS PRESSED AND SPACE!!");
-                }
-            }
-            _ => {}
-        },
-        EventType::KeyRelease(key) => match key {
-            Key::MetaLeft => unsafe { WINDOWS_PRESSED = false },
-            _ => {}
-        },
-
-        _ => {}
-    }
-}
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -43,22 +17,46 @@ fn main() {
         .add_item(hide);
     let system_tray = SystemTray::new().with_menu(tray_menu);
 
-    // This will block.
-    if let Err(error) = listen(callback) {
-        println!("Error: {:?}", error)
-    }
-
     tauri::Builder::default()
         .system_tray(system_tray)
+        .on_system_tray_event(|app, event| match event {
+            tauri::SystemTrayEvent::DoubleClick { .. } => {
+                let window = app.get_window("main").unwrap();
+                if window.is_visible().unwrap() {
+                    window.hide().unwrap();
+                } else {
+                    window.show().unwrap();
+                }
+            }
+            tauri::SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "quit" => {
+                    let window = app.get_window("main").unwrap();
+                    window.close().unwrap();
+                    std::process::exit(0)
+                }
+                "hide" => {
+                    let window = app.get_window("main").unwrap();
+                    window.hide().unwrap();
+                }
+                _ => {}
+            },
+            _ => {}
+        })
         .setup(|app| {
             let window = app.get_window("main").unwrap();
 
             let screen = window.current_monitor()?.unwrap();
             let screen_size = screen.size();
 
+            // MAX SIZE!!
+            // window.set_size(PhysicalSize {
+            // height: 500,
+            // width: 500,
+            // })?;
+
             window.set_size(PhysicalSize {
                 height: 500,
-                width: 600,
+                width: 500,
             })?;
 
             let window_size = window.outer_size().unwrap();
