@@ -47,8 +47,7 @@
         "focus" : true,
         "transparent": true,
         "decorations": false,
-        "skipTaskbar": true,
-        "titleBarStyle": "Overlay"
+        "skipTaskbar": true
       }
     ],
     "security": {
