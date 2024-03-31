@@ -1,20 +1,31 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::sync::mpsc;
+
+use hotkeys::register_global_hotkey;
 use tauri::{
-    CustomMenuItem, Manager, PhysicalPosition, PhysicalSize, SystemTray, SystemTrayMenu,
+    CustomMenuItem, Manager, PhysicalPosition, PhysicalSize, Runtime, SystemTray, SystemTrayMenu,
     SystemTrayMenuItem,
 };
 use window_shadows::set_shadow;
 use window_vibrancy::apply_acrylic;
 
+pub mod hotkeys;
+
+#[tauri::command]
+async fn search_input<R: Runtime>(
+    app: tauri::AppHandle<R>,
+    window: tauri::Window<R>,
+    value: String,
+) -> Result<(), String> {
+    println!("Value: {value}");
+    Ok(())
+}
+
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(quit)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(hide);
+    let tray_menu = SystemTrayMenu::new().add_item(quit);
     let system_tray = SystemTray::new().with_menu(tray_menu);
 
     tauri::Builder::default()
@@ -29,15 +40,7 @@ fn main() {
                 }
             }
             tauri::SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    let window = app.get_window("main").unwrap();
-                    window.close().unwrap();
-                    std::process::exit(0)
-                }
-                "hide" => {
-                    let window = app.get_window("main").unwrap();
-                    window.hide().unwrap();
-                }
+                "quit" => std::process::exit(0),
                 _ => {}
             },
             _ => {}
@@ -72,9 +75,13 @@ fn main() {
             #[cfg(any(windows, target_os = "macos"))]
             set_shadow(&window, true).unwrap();
 
+            std::thread::spawn(|| {
+                unsafe { register_global_hotkey(window) };
+            });
+
             Ok(())
         })
-        // .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![search_input])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
