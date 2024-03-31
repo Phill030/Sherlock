@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background-color: transparent;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+@font-face {
+  font-family: SfProBold;
+  src: url("../assets/fonts/SFPRODISPLAYBOLD.OTF") format("opentype");
+}
+
+@font-face {
+  font-family: SfProRegular;
+  src: url("../assets/fonts/SFPRODISPLAYREGULAR.OTF") format("opentype");
+}
+
+#window {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
