@@ -44,7 +44,8 @@
         "height": 600,
         "resizable": false,
         "center": true,
-        "focus" : true,
+        "focus" : false,
+        "visible": false,
         "transparent": true,
         "decorations": false,
         "skipTaskbar": true
