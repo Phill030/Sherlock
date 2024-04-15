@@ -39,6 +39,7 @@ pub unsafe fn register_global_hotkey(window: Window) {
                 } else {
                     window.show().unwrap();
                     window.set_focus().unwrap();
+                    window.emit("open_window", {}).unwrap();
                 }
             }
         }
