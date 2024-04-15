@@ -1,12 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::mpsc;
-
 use hotkeys::register_global_hotkey;
 use tauri::{
     CustomMenuItem, Manager, PhysicalPosition, PhysicalSize, Runtime, SystemTray, SystemTrayMenu,
-    SystemTrayMenuItem,
 };
 use window_shadows::set_shadow;
 use window_vibrancy::apply_acrylic;
@@ -15,8 +12,8 @@ pub mod hotkeys;
 
 #[tauri::command]
 async fn search_input<R: Runtime>(
-    app: tauri::AppHandle<R>,
-    window: tauri::Window<R>,
+    _app: tauri::AppHandle<R>,
+    _window: tauri::Window<R>,
     value: String,
 ) -> Result<(), String> {
     println!("Value: {value}");
